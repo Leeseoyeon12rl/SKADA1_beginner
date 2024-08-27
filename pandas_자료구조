@@ -1,0 +1,840 @@
+Pandas
+개요
+관계형 또는 레이블이 된 데이터로 쉽고 직관적 으로 작업할 수 있도록 설계되었고, 빠르고, 유연한 데이터 구조를 제공하는 Python 패키지입니다.
+
+또한, 어떤 언어로도 사용할 수 있는 가장 강력하고 유연한 오픈 소스 데이터 분석 / 조직 도구입니다.
+
+Pandas는 다음의 종류의 데이터에 적합한 분석 패키지입니다.
+
+SQL 테이블 또는 Excel 스프레드 시트에서와 같은 열과 행으로 이루어진 테이블 형식 데이터
+정렬되고 정렬되지 않은 시계열 데이터
+다른 형태의 관찰 / 통계 데이터 세트
+Pandas 공식 문서
+공식 문서는 다음 링크에서 확인할 수 있습니다.
+
+공식 도큐먼트
+Pandas의 Alias 지정
+pandas는 pd의 alias를 사용합니다.
+
+import pandas as pd
+pd
+<module 'pandas' from '/home/elicer/.local/lib/python3.10/site-packages/pandas/__init__.py'>
+pd.__version__
+'1.4.2'
+Series
+도큐먼트
+
+Pandas의 Series는 1차원 배열로서 다음의 특징을 가집니다.
+
+데이터를 담는 차원 배열 구조를 가집니다.
+인덱스(index)를 사용 가능합니다.
+데이터 타입을 가집니다. (dtype)
+Series의 생성
+numpy array로 생성한 경우
+
+# numpy 생성
+arr = np.arange(100, 105)
+arr
+array([100, 101, 102, 103, 104])
+s = pd.Series(arr)
+s
+0    100
+1    101
+2    102
+3    103
+4    104
+dtype: int64
+dtype을 지정하여 생성한 경우
+
+s = pd.Series(arr, dtype='int32')
+s
+0    100
+1    101
+2    102
+3    103
+4    104
+dtype: int32
+list로 생성한 경우
+s = pd.Series(['부장', '차장', '대리', '사원', '인턴'])
+s
+0    부장
+1    차장
+2    대리
+3    사원
+4    인턴
+dtype: object
+다양한 타입(type)의 데이터를 섞은 경우
+Series에 다양한 데이터 타입의 데이터로 생성시, object 타입으로 생성됩니다.
+
+s = pd.Series([91, 2.5, '스포츠', 4, 5.16])
+s
+0      91
+1     2.5
+2     스포츠
+3       4
+4    5.16
+dtype: object
+연습문제
+다음의 Series를 생성하세요.
+
+dtype은 float32가 되도록 생성하세요
+# 코드를 입력해 주세요
+arr = np.arange(3,12,2)
+s = pd.Series(arr, dtype='float32')
+[출력 결과]
+
+0     3.0
+1     5.0
+2     7.0
+3     9.0
+4    11.0
+dtype: float32
+pd.Series(list('가나다라마'))
+0    가
+1    나
+2    다
+3    라
+4    마
+dtype: object
+# 코드를 입력해 주세요
+s = pd.Series(['가','나','다','라','마'])
+s
+0    가
+1    나
+2    다
+3    라
+4    마
+dtype: object
+[출력 결과]
+
+0    가
+1    나
+2    다
+3    라
+4    마
+dtype: object
+인덱싱 (indexing)
+s = pd.Series(['부장', '차장', '대리', '사원', '인턴'])
+s
+0    부장
+1    차장
+2    대리
+3    사원
+4    인턴
+dtype: object
+Series 생성시 0부터 순차적으로 부여되는 index를 확인할 수 있습니다.
+
+이를 RangeIndex라 부릅니다.
+
+s.index
+RangeIndex(start=0, stop=5, step=1)
+인덱싱 사례
+
+s[0]
+'부장'
+fancy indexing
+s[[1, 3]]
+1    차장
+3    사원
+dtype: object
+s[np.arange(1, 4, 2)]
+1    차장
+3    사원
+dtype: object
+boolean indexing
+조건식을 만들어서 특정 조건에 대하여 True에 해당하는 값만 필터링 할 수 있습니다.
+
+np.random.seed(0)
+s = pd.Series(np.random.randint(10000, 20000, size=(10,)))
+s
+0    12732
+1    19845
+2    13264
+3    14859
+4    19225
+5    17891
+6    14373
+7    15874
+8    16744
+9    13468
+dtype: int64
+boolean series를 생성 후 index로 활용하여 필터합니다.
+
+s > 15000
+0    False
+1     True
+2    False
+3    False
+4     True
+5     True
+6    False
+7     True
+8     True
+9    False
+dtype: bool
+# 15000 이상인 데이터 필터
+#s[s > 15000]
+idx = s > 15000
+s[idx]
+1    19845
+4    19225
+5    17891
+7    15874
+8    16744
+dtype: int64
+기본 값으로 부여되는 RangeIndex에 사용자 정의의 index를 지정할 수 있습니다.
+
+s = pd.Series(['마케팅', '경영', '개발', '기획', '인사'], index=['a', 'b', 'c', 'd', 'e'])
+s
+a    마케팅
+b     경영
+c     개발
+d     기획
+e     인사
+dtype: object
+s.index
+Index(['a', 'b', 'c', 'd', 'e'], dtype='object')
+사용자 정의의 index 부여시 변경된 index로 조회 가능합니다.
+
+s['c']
+'개발'
+s[['a', 'd']]
+a    마케팅
+d     기획
+dtype: object
+먼저, Series를 생성 후 index 속성 값에 새로운 index를 할당하여 인덱스를 지정할 수 있습니다.
+
+s = pd.Series(['마케팅', '경영', '개발', '기획', '인사'])
+s.index
+RangeIndex(start=0, stop=5, step=1)
+s.index = list('abcde')
+s
+a    마케팅
+b     경영
+c     개발
+d     기획
+e     인사
+dtype: object
+연습문제
+다음의 Series를 생성하고 sample 변수에 대입하고 출력하세요
+
+# 코드를 입력해 주세요
+arr = np.arange(10,51,10)
+s = pd.Series(arr)
+s.index = list('가나다라마')
+s
+가    10
+나    20
+다    30
+라    40
+마    50
+dtype: int64
+[출력 결과]
+
+가    10
+나    20
+다    30
+라    40
+마    50
+dtype: int64
+sample중 '나'와 '라' 데이터를 조회하세요
+
+# 코드를 입력해 주세요
+s[['나', '라']]
+나    20
+라    40
+dtype: int64
+[출력 결과]
+
+나    20
+라    40
+dtype: int64
+np.random.seed(20)
+sample2 = pd.Series(np.random.randint(100, 200, size=(15,)))
+sample2
+0     199
+1     190
+2     115
+3     195
+4     128
+5     190
+6     109
+7     120
+8     175
+9     122
+10    171
+11    134
+12    196
+13    140
+14    185
+dtype: int64
+sample2 중 160 이하인 데이터만 필터하세요
+
+# 코드를 입력해 주세요
+idx = sample2 <= 160
+sample2[idx]
+2     115
+4     128
+6     109
+7     120
+9     122
+11    134
+13    140
+dtype: int64
+[출력 결과]
+
+2     115
+4     128
+6     109
+7     120
+9     122
+11    134
+13    140
+dtype: int64
+sample2 중 130 이상 170 이하인 데이터만 필터하세요
+
+# 코드를 입력해 주세요
+idx = (sample2 >= 130) & (sample2 <= 170)
+sample2[idx]
+11    134
+13    140
+dtype: int64
+[출력 결과]
+
+11    134
+13    140
+dtype: int64
+속성 (attribute)
+values
+values는 Series 데이터 값(value)만 numpy array 형식으로 가져 옵니다.
+
+s = pd.Series(['마케팅', '경영', '개발', '기획', '인사'])
+s.index = list('가나다라마')
+s
+가    마케팅
+나     경영
+다     개발
+라     기획
+마     인사
+dtype: object
+s.values
+array(['마케팅', '경영', '개발', '기획', '인사'], dtype=object)
+s.index
+Index(['가', '나', '다', '라', '마'], dtype='object')
+ndim - 차원
+Series는 1차원 자료구조이기 때문에 ndim 출력시 1이 출력됩니다.
+
+s.ndim
+1
+shape
+shape은 데이터의 모양(shape)을 알아보기 위하여 사용하는데, Series의 shape은 데이터의 갯수를 나타냅니다.
+
+튜플(tuple) 형식으로 출력됩니다.
+
+s.shape
+(5,)
+type((5))
+int
+type((5,))
+tuple
+NaN (Not a Number)
+Pandas에서 NaN 값은 비어있는 결측치 데이터를 의미합니다.
+
+임의로 비어있는 값을 대입하고자 할 때는 numpy의 nan (np.nan)을 입력합니다.
+
+import numpy as np
+s = pd.Series(['선화', '강호', np.nan, '소정', '우영'])
+s
+0     선화
+1     강호
+2    NaN
+3     소정
+4     우영
+dtype: object
+연습문제
+다음과 같은 Series를 생성해 주세요
+
+# 코드를 입력해 주세요
+s = pd.Series(['apple', np.nan, 'banana', 'kiwi', 'gubong'])
+s.index = list('가나다라마')
+s
+가     apple
+나       NaN
+다    banana
+라      kiwi
+마    gubong
+dtype: object
+[출력 결과]
+
+가     apple
+나       NaN
+다    banana
+라      kiwi
+마    gubong
+dtype: object
+결측치 (NaN) 값 처리
+isnull()과 isna()은 NaN 값을 찾는 함수 입니다.
+
+isnull()과 isna()는 결과가 동일합니다.
+
+s.isnull()
+가    False
+나     True
+다    False
+라    False
+마    False
+dtype: bool
+s.isna()
+가    False
+나     True
+다    False
+라    False
+마    False
+dtype: bool
+이를 boolean indexing에 적용해볼 수 있습니다.
+
+s[s.isnull()]
+나    NaN
+dtype: object
+s[s.isna()]
+나    NaN
+dtype: object
+notnull()은 NaN값이 아닌, 즉 비어있지 않은 데이터를 찾는 함수 입니다.
+
+s.notnull()
+가     True
+나    False
+다     True
+라     True
+마     True
+dtype: bool
+s.notna()
+가     True
+나    False
+다     True
+라     True
+마     True
+dtype: bool
+s[s.notnull()]
+가     apple
+다    banana
+라      kiwi
+마    gubong
+dtype: object
+연습문제
+sample = pd.Series(['IT서비스', np.nan, '반도체', np.nan, '바이오', '자율주행'])
+sample
+0    IT서비스
+1      NaN
+2      반도체
+3      NaN
+4      바이오
+5     자율주행
+dtype: object
+sample 중 결측치 데이터만 필터하세요
+
+# 코드를 입력해 주세요
+sample[sample.isna()]
+1    NaN
+3    NaN
+dtype: object
+[출력 결과]
+
+1    NaN
+3    NaN
+dtype: object
+sample중 결측치가 아닌 데이터만 필터하세요
+
+# 코드를 입력해 주세요
+sample[sample.notna()]
+0    IT서비스
+2      반도체
+4      바이오
+5     자율주행
+dtype: object
+[출력 결과]
+
+0    IT서비스
+2      반도체
+4      바이오
+5     자율주행
+dtype: object
+슬라이싱
+(주의) 숫자형 index로 접근할 때는 뒷 index가 포함되지 않습니다.
+
+s = pd.Series(np.arange(100, 150, 10))
+s
+0    100
+1    110
+2    120
+3    130
+4    140
+dtype: int64
+s[1:3]
+1    110
+2    120
+dtype: int64
+새롭게 지정한 인덱스(문자열)는 시작 index와 끝 index 모두 포함합니다.
+
+s.index = list('가나다라마')
+s
+가    100
+나    110
+다    120
+라    130
+마    140
+dtype: int64
+s['나':'라']
+나    110
+다    120
+라    130
+dtype: int64
+연습문제
+np.random.seed(0)
+sample = pd.Series(np.random.randint(100, 200, size=(10,)))
+sample
+0    144
+1    147
+2    164
+3    167
+4    167
+5    109
+6    183
+7    121
+8    136
+9    187
+dtype: int64
+sample에서 다음과 같은 결과를 가지도록 슬라이싱 하세요
+
+# 코드를 입력해 주세요
+sample[2:7]
+2    164
+3    167
+4    167
+5    109
+6    183
+dtype: int64
+[출력 결과]
+
+2    164
+3    167
+4    167
+5    109
+6    183
+dtype: int64
+np.random.seed(0)
+sample2 = pd.Series(np.random.randint(100, 200, size=(10,)), index=list('가나다라마바사아자차'))
+sample2
+가    144
+나    147
+다    164
+라    167
+마    167
+바    109
+사    183
+아    121
+자    136
+차    187
+dtype: int64
+sample2에서 다음과 같은 결과를 가지도록 슬라이싱 하세요
+
+# 코드를 입력해 주세요
+sample2['바':'차']
+바    109
+사    183
+아    121
+자    136
+차    187
+dtype: int64
+[출력 결과]
+
+바    109
+사    183
+아    121
+자    136
+차    187
+dtype: int64
+# 코드를 입력해 주세요
+sample2['가':'다']
+가    144
+나    147
+다    164
+dtype: int64
+[출력 결과]
+
+가    144
+나    147
+다    164
+dtype: int64
+# 코드를 입력해 주세요
+sample2['나':'바']
+나    147
+다    164
+라    167
+마    167
+바    109
+dtype: int64
+[출력 결과]
+
+나    147
+다    164
+라    167
+마    167
+바    109
+dtype: int64
+DataFrame
+도큐먼트
+
+pd.DataFrame
+
+2차원 데이터 구조 (Excel 데이터 시트를 생각하시면 됩니다)
+행(row), 열(column)으로 구성되어 있습니다.
+각 열(column)은 각각의 데이터 타입 (dtype)을 가집니다.
+생성
+list 를 통한 생성할 수 있습니다. DataFrame을 만들 때는 2차원 list를 대입합니다.
+
+pd.DataFrame([[1, 2, 3], 
+              [4, 5, 6], 
+              [7, 8, 9]])
+0	1	2
+0	1	2	3
+1	4	5	6
+2	7	8	9
+아래 예제와 같이 columns를 지정하면, DataFrame의 각 열에 대한 컬럼명이 붙습니다.
+
+pd.DataFrame([[1, 2, 3], 
+              [4, 5, 6], 
+              [7, 8, 9]], columns=['가', '나', '다'])
+가	나	다
+0	1	2	3
+1	4	5	6
+2	7	8	9
+dictionary를 통한 생성도 가능합니다.
+
+편리한 점은 dictionary의 key 값이 자동으로 column 명으로 지정됩니다.
+
+data = {
+    'name': ['Kim', 'Lee', 'Park'], 
+    'age': [24, 27, 34], 
+    'children': [2, 1, 3]
+}
+pd.DataFrame(data)
+name	age	children
+0	Kim	24	2
+1	Lee	27	1
+2	Park	34	3
+속성
+DataFrame은 다음의 속성을 가집니다.
+
+index: index (기본 값으로 RangeIndex)
+columns: column 명
+values: numpy array형식의 데이터 값
+dtypes: column 별 데이터 타입
+T: DataFrame을 전치(Transpose)
+data = {
+    'name': ['Kim', 'Lee', 'Park'], 
+    'age': [24, 27, 34], 
+    'children': [2, 1, 3]
+}
+
+df = pd.DataFrame(data)
+df
+name	age	children
+0	Kim	24	2
+1	Lee	27	1
+2	Park	34	3
+df.index
+RangeIndex(start=0, stop=3, step=1)
+df.columns
+Index(['name', 'age', 'children'], dtype='object')
+list(df.columns)
+['name', 'age', 'children']
+df.values
+array([['Kim', 24, 2],
+       ['Lee', 27, 1],
+       ['Park', 34, 3]], dtype=object)
+데이터프레임에서의 dtypes 속성은 컬럼별 dtype을 출력합니다
+
+df.dtypes
+name        object
+age          int64
+children     int64
+dtype: object
+df.T
+0	1	2
+name	Kim	Lee	Park
+age	24	27	34
+children	2	1	3
+index 지정
+data = {
+    'name': ['Kim', 'Lee', 'Park'], 
+    'age': [24, 27, 34], 
+    'children': [2, 1, 3]
+}
+
+df = pd.DataFrame(data, index=list('가나다'))
+df
+name	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df
+name	age	children
+0	Kim	24	2
+1	Lee	27	1
+2	Park	34	3
+df.index = list('abc')
+df
+name	age	children
+a	Kim	24	2
+b	Lee	27	1
+c	Park	34	3
+(참고) DataFrame의 indexing / slicing은 나중에 세부적으로 다루도록 하겠습니다.
+
+column 다루기
+DataFrame에 key 값으로 column의 이름을 지정하여 column을 선택할 수 있습니다.
+
+1개의 column을 가져올 수 있으며, 1개의 column 선택시 Series가 됩니다.
+
+df
+name	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df['name']
+가     Kim
+나     Lee
+다    Park
+Name: name, dtype: object
+type(df['name'])
+pandas.core.series.Series
+2개 이상의 column 선택은 fancy indexing으로 가능합니다.
+
+df[['name', 'children']]
+name	children
+가	Kim	2
+나	Lee	1
+다	Park	3
+type(df[['name', 'children']])
+pandas.core.frame.DataFrame
+(참고) column에 대한 slicing도 가능 하지만 이 부분도 나중에 다루도록 하겠습니다.
+
+rename으로 column명 변경 가능합니다.
+
+DataFrame.rename(columns={'바꾸고자 하는 컬럼명': '바꿀 컬럼명'})
+
+df
+name	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df.rename(columns={'name': '이름'})
+이름	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df
+name	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+inplace=True 옵션으로 변경사항을 바로 적용할 수 있습니다.
+
+df.rename(columns={'name': '이름'}, inplace=True)
+df
+이름	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df
+이름	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+data = {
+    'name': ['Kim', 'Lee', 'Park'], 
+    'age': [24, 27, 34], 
+    'children': [2, 1, 3]
+}
+
+df = pd.DataFrame(data, index=list('가나다'))
+df
+name	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+df = df.rename(columns={'name':'이름'})
+df
+이름	age	children
+가	Kim	24	2
+나	Lee	27	1
+다	Park	34	3
+연습문제
+다음의 DataFrame을 생성하세요
+
+생성된 DataFrame은 df 변수에 할당합니다.
+# 코드를 입력해 주세요
+menu = {
+    'food' : ['KFC', 'McDonald', 'SchoolFood'],
+    'price' : [1000, 2000, 2500],
+    'rating' : [4.5, 3.9, 4.2]
+}
+df = pd.DataFrame(menu)
+df
+food	price	rating
+0	KFC	1000	4.5
+1	McDonald	2000	3.9
+2	SchoolFood	2500	4.2
+[출력 결과]
+
+food	price	rating
+0	KFC	1000	4.5
+1	McDonald	2000	3.9
+2	SchoolFood	2500	4.2
+food 컬럼과 rating 컬럼만 선택하여 출력하세요
+
+# 코드를 입력해 주세요
+df[['food', 'rating']]
+food	rating
+0	KFC	4.5
+1	McDonald	3.9
+2	SchoolFood	4.2
+[출력 결과]
+
+food	rating
+0	KFC	4.5
+1	McDonald	3.9
+2	SchoolFood	4.2
+food 컬럼명을 place로 컬럼명을 변경해 주세요
+
+# 코드를 입력해 주세요
+df.rename(columns={'food':'place'})
+df
+food	price	rating
+0	KFC	1000	4.5
+1	McDonald	2000	3.9
+2	SchoolFood	2500	4.2
+[출력 결과]
+
+place	price	rating
+0	KFC	1000	4.5
+1	McDonald	2000	3.9
+2	SchoolFood	2500	4.2
+제출
+제출을 위해 아래와 같은 DataFrame을 생성하여 result_df에 저장하세요.
+
+name	age	children
+0	Kim	24	2
+1	Lee	27	1
+2	Park	34	3
+data = {
+    'name' : ['Kim', 'Lee', 'Park'],
+    'age' : [24, 27, 34],
+    'children' : [2, 1, 3]
+}
+result_df = pd.DataFrame(data)
+result_df
+name	age	children
+0	Kim	24	2
+1	Lee	27	1
+2	Park	34	3
